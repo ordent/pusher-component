@@ -1,0 +1,26 @@
+{
+  "name": "pushercomponent",
+  "authors": [
+    "Dimas Satrio <dimassrio@gmail.com>"
+  ],
+  "description": "updated webcomponent for pusher",
+  "main": "pushercomponent.html",
+  "keywords": [
+    "pusher",
+    "websocket",
+    "webcomponent"
+  ],
+  "license": "MIT",
+  "homepage": "ordent.co",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+	"polymer" : "Polymer/polymer#^1.4.0",
+    "pusher-js": "pusher#^4.0.0"
+  }
+}

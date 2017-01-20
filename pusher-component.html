@@ -1,0 +1,107 @@
+<link rel="import" href="../polymer/polymer.html">
+<script src="../pusher-js/dist/web/pusher.js"></script>
+<!--
+The `pusher-component` provides the ability to connect to a `pusher` server.
+<b>Example</b>:
+    <socket-connection url="/chat" auto></socket-connection>
+@element socket-connection
+@status alpha
+@demo demo/index.html
+-->
+<dom-module id="pusher-component">
+	<template>
+		<style>
+			:host {
+				display: none;
+			}
+		</style>
+ 	</template>
+	<script>
+		Polymer({
+			is : "pusher-component",
+
+			properties : {
+				options : {
+					type : Object,
+					value : {},
+					reflectToAttribute : true
+				},
+				key : {
+					type : String,
+					reflectToAttribute : true
+				},
+				_pusher : {
+					type : Object
+				},
+				cluster : {
+					type : String,
+					reflectToAttribute : true
+				},
+				channel : {
+					type : String,
+					reflectToAttribute : true
+				},
+				auto : {
+					type : Boolean,
+					reflectToAttribute : true
+				},
+				_channel : {
+					type : Object
+				}
+			},
+			ready : function(){
+				if(this.key == ""){
+					console.error("key not set");
+				}
+
+				if(this.cluster == "" && this.options.cluster == null){
+					console.error("cluster not set");
+				}
+
+				if(this.channel == ""){
+					console.error("channel not set");
+				}
+
+				if(this.cluster != ""){
+					this.options.cluster = this.cluster;
+				}
+
+				if(this.auto){
+					this.connect();
+				}
+			},
+			connect : function(){
+				this._pusher = new Pusher(this.key, this.options);
+				this._channel = this._pusher.subscribe(this.channel);
+				var poly = this;
+				this._pusher.connection.bind('connected', function(){
+					poly.fire("pusher-connected", "pusher connected");
+				});
+				this._pusher.connection.bind('disconnected', function(){
+					poly.fire("pusher-disconnected", "pusher disconnected");
+				});
+			},
+			bind : function(eventName){
+				if(this._pusher == null || this.__pusher == {}){
+					this.connect();
+				}
+				var poly = this;
+				this._channel.bind(eventName, function(data){
+					poly.fire(eventName, data);
+				});
+			},
+			unbind : function(eventName){
+				this._channel.unbind(eventName);
+			},
+			bindGlobal : function(){
+				var poly = this;
+				this._channel.bind_global(function(eventName, data){
+					poly.fire(eventName, data);
+				});
+			},
+			unbindGlobal : function(){
+				this._channel.unbind_global();
+			}
+		});
+	</script>
+</dom-module>
